@@ -1,34 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto'; // Define DTOs para la validación
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
+  @ApiOperation({ summary: 'Create a category' })
+  @ApiResponse({ status: 201, description: 'The category has been successfully created.' })
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
 
   @Get()
-  findAll() {
+  @ApiOperation({ summary: 'Get all categories' })
+  async findAll() {
     return this.categoriesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
+  @ApiOperation({ summary: 'Get a category by id' })
+  async findOne(@Param('id') id: string) { 
+    return this.categoriesService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a category by id' })
+  async update(@Param('id') id: string, @Body() updateCategoryDto: CreateCategoryDto) {  // El tipo de id es 'string'
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
+  @ApiOperation({ summary: 'Delete a category by id' })
+  async remove(@Param('id') id: string) {  // El tipo de id es 'string'
+    return this.categoriesService.remove(id);
   }
 }
