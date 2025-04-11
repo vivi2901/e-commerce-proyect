@@ -2,24 +2,24 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateProductDto {
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false})
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsNumber()
   price: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsNumber()
   quantity: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: true} )
   @IsString()
   @IsOptional()
   categoryId?: string;

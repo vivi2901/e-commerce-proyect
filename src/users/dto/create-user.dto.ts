@@ -3,20 +3,20 @@ import { IsEmail, IsString, MinLength, IsEnum } from 'class-validator';
 import { Role } from 'generated/prisma';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsString()
   @MinLength(6)
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true})
   @IsString()
   name: string;
 
-  @ApiProperty({ enum: Role })
+  @ApiProperty({ enum: Role, required: true})
   @IsEnum(Role)
   role: Role;
 }
