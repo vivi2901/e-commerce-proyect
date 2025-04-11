@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto'; // Define DTOs para la validación
+import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('categories')
@@ -29,13 +29,13 @@ export class CategoriesController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a category by id' })
-  async update(@Param('id') id: string, @Body() updateCategoryDto: CreateCategoryDto) {  // El tipo de id es 'string'
+  async update(@Param('id') id: string, @Body() updateCategoryDto: CreateCategoryDto) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a category by id' })
-  async remove(@Param('id') id: string) {  // El tipo de id es 'string'
+  async remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
   }
 }

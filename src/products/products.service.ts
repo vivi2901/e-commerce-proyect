@@ -45,6 +45,6 @@ export class ProductsService {
       throw new Error('Producto no encontrado');
     }
 
-    return product.quantity; // Devuelve la cantidad disponible
+    return product.quantity;
   }
 }

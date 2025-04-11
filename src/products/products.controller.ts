@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto'; // Define DTOs para la validación
+import { CreateProductDto } from './dto/create-product.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('products')
@@ -48,4 +48,3 @@ export class ProductsController {
     }
   }
 }
-
