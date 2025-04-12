@@ -12,9 +12,39 @@ export class ProductsService {
     });
   }
 
-  async findAll(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+  async findAll(params: {
+    page: number;
+    limit: number;
+    search?: string;
+  }) {
+    const { page, limit, search } = params;
+  
+    const where: any = {};
+  
+    if (search) {
+      where.name = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+  
+    const [products, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit === 0 ? undefined : limit,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+  
+    return {
+      data: products,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
+  
 
   async findOne(id: string): Promise<Product | null> {
     return this.prisma.product.findUnique({
