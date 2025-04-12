@@ -5,6 +5,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
+import { RegisterDto } from './dto/register.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,5 +21,11 @@ export class AuthController {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     return userToken;
+  }
+
+  @Public()
+  @Post('register')
+  async register(@Body() data: RegisterDto) {
+    return this.authService.register(data);
   }
 }
