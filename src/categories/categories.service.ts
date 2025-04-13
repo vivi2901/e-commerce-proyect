@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Category, Prisma } from 'generated/prisma';
 
@@ -7,9 +7,14 @@ export class CategoriesService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.CategoryCreateInput): Promise<Category> {
-    return this.prisma.category.create({
-      data,
-    });
+    try {
+      return await this.prisma.category.create({ data });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException(`Category with name '${data.name}' already exists`);
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<Category[]> {
@@ -38,9 +43,13 @@ export class CategoriesService {
       if (error.code === 'P2025') {
         throw new NotFoundException(`Category with id '${id}' not found`);
       }
+      if (error.code === 'P2002') {
+        throw new ConflictException(`Category with name '${(data as any).name}' already exists`);
+      }
       throw error;
     }
   }
+  
 
   async remove(id: string): Promise<Category> {
     try {
