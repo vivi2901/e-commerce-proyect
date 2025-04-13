@@ -4,11 +4,11 @@ import { IsString, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-valid
 export class CreateCategoryDto {
   @ApiProperty({ required: true })
   @IsString()
-  @IsNotEmpty({ message: 'El nombre de la categoría no debe estar vacío' })
-  @MinLength(3, { message: 'El nombre debe tener al menos 3 caracteres' })
-  @MaxLength(50, { message: 'El nombre no debe tener más de 50 caracteres' })
+  @IsNotEmpty({ message: 'The category name cannot be empty' })
+  @MinLength(3, { message: 'The name must be at least 3 characters' })
+  @MaxLength(50, { message: 'The name must not exceed 50 characters' })
   @Matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, {
-    message: 'El nombre solo puede contener letras y espacios',
+    message: 'The name can only contain letters and spaces',
   })
   name: string;
 }

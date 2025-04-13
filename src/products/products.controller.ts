@@ -91,7 +91,7 @@ export class ProductsController {
     try {
       return await this.productsService.getAvailableQuantity(id);
     } catch (error) {
-      throw new NotFoundException('Producto no encontrado');
+      throw new NotFoundException('Product not found');
     }
   }
 }
