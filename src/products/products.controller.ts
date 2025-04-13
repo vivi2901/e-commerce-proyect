@@ -86,6 +86,7 @@ export class ProductsController {
   @Get(':id/quantity')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER, Role.MANAGER)
+  @ApiOperation({ summary: 'Get quantity of a product by id' })
   async getAvailableQuantity(@Param('id') id: string): Promise<number> {
     try {
       return await this.productsService.getAvailableQuantity(id);
