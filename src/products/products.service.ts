@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Product, Prisma } from 'generated/prisma';
 
@@ -18,16 +18,16 @@ export class ProductsService {
     search?: string;
   }) {
     const { page, limit, search } = params;
-  
+
     const where: any = {};
-  
+
     if (search) {
       where.name = {
         contains: search,
         mode: 'insensitive',
       };
     }
-  
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -36,7 +36,7 @@ export class ProductsService {
       }),
       this.prisma.product.count({ where }),
     ]);
-  
+
     return {
       data: products,
       total,
@@ -44,25 +44,44 @@ export class ProductsService {
       lastPage: Math.ceil(total / limit),
     };
   }
-  
 
-  async findOne(id: string): Promise<Product | null> {
-    return this.prisma.product.findUnique({
+  async findOne(id: string): Promise<Product> {
+    const product = await this.prisma.product.findUnique({
       where: { id },
     });
+
+    if (!product) {
+      throw new NotFoundException(`Product with id '${id}' not found`);
+    }
+
+    return product;
   }
 
   async update(id: string, data: Prisma.ProductUpdateInput): Promise<Product> {
-    return this.prisma.product.update({
-      where: { id },
-      data,
-    });
+    try {
+      return await this.prisma.product.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Product with id '${id}' not found`);
+      }
+      throw error;
+    }
   }
 
   async remove(id: string): Promise<Product> {
-    return this.prisma.product.delete({
-      where: { id },
-    });
+    try {
+      return await this.prisma.product.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Product with id '${id}' not found`);
+      }
+      throw error;
+    }
   }
 
   async getAvailableQuantity(productId: string): Promise<number> {
@@ -72,7 +91,7 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new Error('Producto no encontrado');
+      throw new NotFoundException(`Product with id '${productId}' not found`);
     }
 
     return product.quantity;
