@@ -1,6 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,29 +11,31 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
+  //Login
   async validateUser(user: LoginDto) {
     const foundUser = await this.prisma.user.findUnique({
       where: { email: user.email },
     });
-
-    if (!foundUser) return null;
-
-    if (foundUser.password === user.password) {
-      return this.jwtService.sign({
-        id: foundUser.id,
-        email: foundUser.email,
-        role: foundUser.role,
-      });
-    }
+  
+    if (!foundUser || foundUser.password !== user.password) {
+      throw new HttpException('Invalid email or password', HttpStatus.BAD_REQUEST);
+    }    
+  
+    return this.jwtService.sign({
+      id: foundUser.id,
+      email: foundUser.email,
+      role: foundUser.role,
+    });
   }
 
+  // Register user 
   async register(data: RegisterDto) {
     const userExists = await this.prisma.user.findUnique({
       where: { email: data.email },
     });
   
     if (userExists) {
-      throw new HttpException('Email already registered', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Email already registered', HttpStatus.CONFLICT);
     }
   
     const newUser = await this.prisma.user.create({

@@ -16,12 +16,17 @@ export class ProductsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a product' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiResponse({ status: 201, description: 'The product has been successfully created.' })
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all products' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER, Role.MANAGER)
   @ApiQuery({
     name: 'page',
     required: false,
@@ -56,23 +61,31 @@ export class ProductsController {
 
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER, Role.MANAGER)
   @ApiOperation({ summary: 'Get a product by id' })
   async findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiOperation({ summary: 'Update a product by id' })
   async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);
   }
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Delete a product by id' })
   async remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
 
   @Get(':id/quantity')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER, Role.MANAGER)
   async getAvailableQuantity(@Param('id') id: string): Promise<number> {
     try {
       return await this.productsService.getAvailableQuantity(id);
